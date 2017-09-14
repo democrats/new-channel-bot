@@ -109,3 +109,27 @@ class NewChannelBotTests(unittest.TestCase):
             "New channel <#3|purposeful>. Purpose: 'recently made!'",
             posts[2].get('text')
         )
+
+    @mock.patch.object(new_channel_bot.slackclient.SlackClient, 'api_call')
+    def test_unicode(self, api):
+        """ Tests that we can handle unicode names """
+        posts = []
+        channels = {
+            'channels': [
+                {
+                    'name': u'\U0001f604',
+                    'id': '1',
+                    'created': time.time(),
+                    'purpose': {'value': u'something\U0001f604'},
+                }
+            ]
+        }
+
+        api.side_effect = _make_fake_api(channels, posts)
+        new_channel_bot.post_new_channels(channels, '#__TEST__')
+
+        self.assertEqual(len(posts), 1)
+        self.assertEqual(
+            u"New channel <#1|\U0001f604>. Purpose: 'something\U0001f604'",
+            posts[0].get('text')
+        )

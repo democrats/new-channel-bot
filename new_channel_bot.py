@@ -20,15 +20,15 @@ def post_new_channels(token, post_channel):
         created = datetime.datetime.utcfromtimestamp(channel['created'])
         purpose = channel.get('purpose', {}).get('value', {})
         name = channel['name']
-        descriptor = "<#{}|{}>".format(channel['id'], name)
+        descriptor = u"<#{}|{}>".format(channel['id'], name)
 
         if created + datetime.timedelta(days=1) > datetime.datetime.now():
             if purpose:
-                text = "New channel {}. Purpose: '{}'".format(
+                text = u"New channel {}. Purpose: '{}'".format(
                     descriptor, purpose
                 )
             else:
-                text = "New channel {}".format(descriptor)
+                text = u"New channel {}".format(descriptor)
 
             response = slack.api_call(
                 'chat.postMessage',
